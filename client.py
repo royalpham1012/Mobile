@@ -16,12 +16,13 @@ from datetime import datetime
 SERVER_URL = "https://2506260734c7.ngrok-free.app"  # Ngrok URL
 TIMEOUT = 10
 
+
 class ConfigManager:
     def __init__(self, server_url):
         self.server_url = server_url
         self.session = requests.Session()
         self.session.timeout = TIMEOUT
-    
+
     def test_connection(self):
         """Test kết nối đến server"""
         try:
@@ -33,7 +34,7 @@ class ConfigManager:
         except Exception as e:
             print(f"❌ Lỗi kết nối: {e}")
             return False
-    
+
     def get_all_config(self):
         """Lấy toàn bộ cấu hình"""
         try:
@@ -46,7 +47,7 @@ class ConfigManager:
         except Exception as e:
             print(f"❌ Lỗi: {e}")
             return None
-    
+
     def update_setting(self, key, value):
         """Cập nhật setting"""
         try:
@@ -59,7 +60,7 @@ class ConfigManager:
         except Exception as e:
             print(f"❌ Lỗi: {e}")
             return False
-    
+
     def update_strategy(self, strategy_name, strategy_type):
         """Cập nhật strategy"""
         try:
@@ -72,7 +73,7 @@ class ConfigManager:
         except Exception as e:
             print(f"❌ Lỗi: {e}")
             return False
-    
+
     def update_strategy_config(self, strategy_name, symbol, volume, stop_loss, take_profit, timeframe):
         """Cập nhật strategy config"""
         try:
@@ -92,7 +93,7 @@ class ConfigManager:
         except Exception as e:
             print(f"❌ Lỗi: {e}")
             return False
-    
+
     def update_test_setting(self, key, value):
         """Cập nhật test setting"""
         try:
@@ -105,7 +106,7 @@ class ConfigManager:
         except Exception as e:
             print(f"❌ Lỗi: {e}")
             return False
-    
+
     def refresh_bot(self):
         """Gửi lệnh refresh bot"""
         try:
@@ -118,7 +119,7 @@ class ConfigManager:
                 return False, error_data.get('message', 'Lỗi không xác định')
         except Exception as e:
             return False, f"Lỗi kết nối: {e}"
-    
+
     def get_mt5_account_info(self):
         """Lấy thông tin tài khoản MT5"""
         try:
@@ -131,7 +132,7 @@ class ConfigManager:
         except Exception as e:
             print(f"❌ Lỗi: {e}")
             return None
-    
+
     def get_config_info(self):
         """Lấy thông tin cấu hình từ server"""
         try:
@@ -159,7 +160,7 @@ class ConfigManager:
         except Exception as e:
             print(f"❌ Lỗi: {e}")
             return None
-    
+
     def get_collection_stats(self, collection_name):
         """Lấy thống kê của một collection"""
         try:
@@ -172,7 +173,7 @@ class ConfigManager:
         except Exception as e:
             print(f"❌ Lỗi: {e}")
             return None
-    
+
     def clear_collection(self, collection_name):
         """Xóa toàn bộ documents trong một collection"""
         try:
@@ -185,11 +186,12 @@ class ConfigManager:
         except Exception as e:
             print(f"❌ Lỗi: {e}")
             return None
-    
+
     def clear_old_documents(self, collection_name, days):
         """Xóa documents cũ trong một collection dựa trên số ngày"""
         try:
-            response = self.session.delete(f"{self.server_url}/api/firebase/collection/{collection_name}/clear-old?days={days}")
+            response = self.session.delete(
+                f"{self.server_url}/api/firebase/collection/{collection_name}/clear-old?days={days}")
             if response.status_code == 200:
                 return response.json()
             else:
@@ -198,11 +200,12 @@ class ConfigManager:
         except Exception as e:
             print(f"❌ Lỗi: {e}")
             return None
-    
+
     def get_collection_documents(self, collection_name, limit=50, offset=0):
         """Lấy danh sách documents trong một collection"""
         try:
-            response = self.session.get(f"{self.server_url}/api/firebase/collection/{collection_name}/documents?limit={limit}&offset={offset}")
+            response = self.session.get(
+                f"{self.server_url}/api/firebase/collection/{collection_name}/documents?limit={limit}&offset={offset}")
             if response.status_code == 200:
                 return response.json()
             else:
@@ -211,7 +214,7 @@ class ConfigManager:
         except Exception as e:
             print(f"❌ Lỗi: {e}")
             return None
-    
+
     def delete_document(self, collection_name, document_id):
         """Xóa một document cụ thể"""
         try:
@@ -224,11 +227,12 @@ class ConfigManager:
         except Exception as e:
             print(f"❌ Lỗi: {e}")
             return None
-    
+
     def update_document(self, collection_name, document_id, data):
         """Cập nhật một document cụ thể"""
         try:
-            response = self.session.put(f"{self.server_url}/api/firebase/document/{collection_name}/{document_id}", json=data)
+            response = self.session.put(f"{self.server_url}/api/firebase/document/{collection_name}/{document_id}",
+                                        json=data)
             if response.status_code == 200:
                 return response.json()
             else:
@@ -238,9 +242,11 @@ class ConfigManager:
             print(f"❌ Lỗi: {e}")
             return None
 
+
 def clear_screen():
     """Xóa màn hình"""
     os.system('clear' if os.name == 'posix' else 'cls')
+
 
 def show_header():
     """Hiển thị header"""
@@ -251,29 +257,30 @@ def show_header():
     print(f"⏰ Thời gian: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
     print("-" * 60)
 
+
 def show_mt5_account_info(config_manager):
     """Hiển thị thông tin tài khoản MT5 với cập nhật realtime"""
     # Biến để kiểm soát vòng lặp
     stop_updating = False
     update_count = 0
-    
+
     def check_for_enter():
         """Thread để kiểm tra phím Enter"""
         nonlocal stop_updating
         input("Nhấn Enter để dừng cập nhật...")
         stop_updating = True
-    
+
     # Bắt đầu thread kiểm tra phím Enter
     enter_thread = threading.Thread(target=check_for_enter, daemon=True)
     enter_thread.start()
-    
+
     print("🔄 Bắt đầu cập nhật realtime mỗi 30 giây...")
     time.sleep(0.5)
-    
+
     while not stop_updating:
         try:
             update_count += 1
-            
+
             # Xóa màn hình và hiển thị header
             clear_screen()
             print("=" * 60)
@@ -284,12 +291,12 @@ def show_mt5_account_info(config_manager):
             print("-" * 60)
             print("💰 THÔNG TIN TÀI KHOẢN MT5 (REALTIME)")
             print("=" * 60)
-            
+
             # Hiển thị trạng thái cập nhật
             loading_chars = ["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"]
             loading_char = loading_chars[update_count % len(loading_chars)]
             print(f"{loading_char} Đang cập nhật... (Lần thứ {update_count})")
-            
+
             # Lấy thông tin tài khoản MT5
             account_info = config_manager.get_mt5_account_info()
             if not account_info:
@@ -301,7 +308,7 @@ def show_mt5_account_info(config_manager):
                 print("\n🔄 Đang thử lại...")
                 time.sleep(3)
                 continue
-            
+
             # Hiển thị thông tin tài khoản
             if 'account' in account_info:
                 account = account_info['account']
@@ -315,13 +322,14 @@ def show_mt5_account_info(config_manager):
                 print(f"  🔒 Free Margin: ${account.get('free_margin', 0):,.2f}")
                 print(f"  📊 Margin Level: {account.get('margin_level', 0):,.2f}%")
                 print(f"  🎯 Currency: {account.get('currency', 'N/A')}")
-            
+
             # Hiển thị các lệnh đang mở
             if 'positions' in account_info:
                 positions = account_info['positions']
                 print(f"\n📋 LỆNH ĐANG MỞ ({len(positions)} lệnh):")
                 if positions:
-                    print(f"{'Ticket':<10} {'Symbol':<10} {'Type':<6} {'Volume':<8} {'Price':<10} {'Profit':<12} {'Comment':<15}")
+                    print(
+                        f"{'Ticket':<10} {'Symbol':<10} {'Type':<6} {'Volume':<8} {'Price':<10} {'Profit':<12} {'Comment':<15}")
                     print("-" * 80)
                     for pos in positions:
                         ticket = pos.get('ticket', 'N/A')
@@ -331,21 +339,22 @@ def show_mt5_account_info(config_manager):
                         price = pos.get('price_open', 0)
                         profit = pos.get('profit', 0)
                         comment = pos.get('comment', 'N/A')
-                        
+
                         # Thêm màu sắc cho profit
                         profit_str = f"${profit:<11.2f}"
                         if profit > 0:
                             profit_str = f"📈 {profit_str}"
                         elif profit < 0:
                             profit_str = f"📉 {profit_str}"
-                        
-                        print(f"{ticket:<10} {symbol:<10} {pos_type:<6} {volume:<8.2f} {price:<10.5f} {profit_str} {comment:<15}")
+
+                        print(
+                            f"{ticket:<10} {symbol:<10} {pos_type:<6} {volume:<8.2f} {price:<10.5f} {profit_str} {comment:<15}")
                 else:
                     print("  Không có lệnh nào đang mở")
-            
+
             # Lấy thông tin cấu hình
             config_info = config_manager.get_config_info()
-            
+
             # Hiển thị thống kê
             if 'summary' in account_info:
                 summary = account_info['summary']
@@ -354,7 +363,7 @@ def show_mt5_account_info(config_manager):
                 print(f"  💰 Tổng profit: ${summary.get('total_profit', 0):,.2f}")
                 print(f"  📈 Lệnh có lãi: {summary.get('profitable_positions', 0)}")
                 print(f"  📉 Lệnh thua lỗ: {summary.get('losing_positions', 0)}")
-                
+
                 # Thêm thông tin cấu hình
                 if config_info:
                     print(f"\n⚙️ CẤU HÌNH:")
@@ -363,724 +372,1063 @@ def show_mt5_account_info(config_manager):
                     drawdown_limit = float(config_info.get('drawdown', 0))
                     daily_profit_target = float(config_info.get('dailyprofittarget', 0))
                     current_profit = account.get('profit', 0)
-                    
+
                     print(f"  💰 Balance at 5AM: ${balance_at_5am:,.2f}")
                     print(f"  🔒 Min Balance: ${min_balance:,.2f}")
                     print(f"  📉 Drawdown Limit: ${drawdown_limit:,.2f}")
                     print(f"  🎯 Daily Profit Target: ${daily_profit_target:,.2f}")
                     print(f"  📊 Profit hiện tại: ${current_profit:,.2f}")
-                    
+
                     # Tính toán thêm
                     current_balance = account.get('balance', 0)
                     daily_profit = current_balance - balance_at_5am
                     drawdown_used = balance_at_5am - current_balance
-                    
+
                     print(f"\n📊 PHÂN TÍCH:")
                     print(f"  📈 Daily Profit: ${daily_profit:,.2f}")
                     print(f"  📉 Drawdown Used: ${drawdown_used:,.2f}")
-                    
+
                     # Hiển thị trạng thái
                     if daily_profit >= daily_profit_target:
                         print(f"  🎯 Daily Target: ✅ ĐẠT MỤC TIÊU")
                     else:
                         remaining = daily_profit_target - daily_profit
                         print(f"  🎯 Daily Target: ⏳ Còn ${remaining:,.2f}")
-                    
+
                     if drawdown_used >= drawdown_limit:
                         print(f"  📉 Drawdown: ⚠️ VƯỢT GIỚI HẠN")
                     else:
                         remaining_dd = drawdown_limit - drawdown_used
                         print(f"  📉 Drawdown: ✅ Còn ${remaining_dd:,.2f}")
-                    
+
                     if current_balance < min_balance:
                         print(f"  🔒 Min Balance: ⚠️ DƯỚI GIỚI HẠN")
                     else:
                         print(f"  🔒 Min Balance: ✅ AN TOÀN")
-            
+
             # Hiển thị thời gian cập nhật
             if 'timestamp' in account_info:
                 timestamp = account_info['timestamp']
                 print(f"\n⏰ Cập nhật lúc: {timestamp}")
-            
+
             print("\n" + "=" * 60)
             print(f"🔄 Cập nhật lần thứ {update_count} - Mỗi 30 giây - Nhấn Enter để dừng")
-            
+
             # Chờ 30 giây trước khi cập nhật lại
             time.sleep(30)
-            
+
         except KeyboardInterrupt:
             break
         except Exception as e:
             print(f"❌ Lỗi khi cập nhật: {e}")
             print("🔄 Đang thử lại...")
             time.sleep(3)
-    
+
     print("\n✅ Đã dừng cập nhật realtime")
     input("Nhấn Enter để quay lại menu chính...")
 
-def show_refresh_bot(config_manager):
-    """Hiển thị chức năng refresh bot"""
-    clear_screen()
-    show_header()
-    
-    print("🔄 REFRESH BOT")
-    print("=" * 60)
-    print("Chức năng này sẽ gửi lệnh refresh đến bot để:")
-    print("  - Tải lại cấu hình từ database")
-    print("  - Khởi động lại các strategy")
-    print("  - Xóa cache và file tạm thời")
-    print("  - Đảm bảo bot hoạt động với cấu hình mới nhất")
-    print("-" * 60)
-    
-    confirm = input("Bạn có chắc chắn muốn refresh bot? (y/n): ").strip().lower()
-    
-    if confirm == 'y':
-        print("\n🔄 Đang gửi lệnh refresh bot...")
-        
-        try:
-            success, message = config_manager.refresh_bot()
-            
-            if success:
-                print("✅ Refresh bot thành công!")
-                print(f"📝 Thông báo: {message}")
-                
-                print("\n📋 CÁC THAY ĐỔI ĐÃ THỰC HIỆN:")
-                print("  ✅ Đã tải lại cấu hình từ database")
-                print("  ✅ Đã khởi động lại các strategy")
-                print("  ✅ Đã xóa cache và file tạm thời")
-                print("  ✅ Bot đang hoạt động với cấu hình mới nhất")
-                
-            else:
-                print("❌ Refresh bot thất bại!")
-                print(f"📝 Lỗi: {message}")
-                
-        except Exception as e:
-            print("❌ Lỗi khi refresh bot:")
-            print(f"   {e}")
-    
-    else:
-        print("❌ Đã hủy refresh bot")
-    
-    print("\n" + "=" * 60)
-    input("Nhấn Enter để quay lại menu chính...")
 
-def show_firebase_management(config_manager):
-    """Hiển thị menu quản lý Firebase"""
+def show_settings_management(config_manager):
+    """Hiển thị menu quản lý Settings"""
     while True:
         clear_screen()
         show_header()
-        
-        print("🔥 QUẢN LÝ FIREBASE")
+
+        print("⚙️ QUẢN LÝ SETTINGS")
         print("=" * 60)
-        print("Chức năng quản lý dữ liệu Firebase:")
-        print("  - Xem danh sách collections")
-        print("  - Xem thống kê collection")
-        print("  - Xóa toàn bộ collection")
-        print("  - Xóa documents cũ")
-        print("  - Xem documents trong collection")
-        print("  - Xóa document cụ thể")
-        print("  - Cập nhật document")
+        print("Chức năng quản lý cấu hình cơ bản của bot:")
+        print("  - Xem danh sách settings hiện tại")
+        print("  - Cập nhật setting cụ thể")
+        print("  - Thêm setting mới")
         print("-" * 60)
-        
-        print("🔧 MENU FIREBASE:")
-        print("  1. 📋 Xem danh sách Collections")
-        print("  2. 📊 Xem thống kê Collection")
-        print("  3. 🗑️ Xóa toàn bộ Collection")
-        print("  4. 🗑️ Xóa Documents cũ")
-        print("  5. 📄 Xem Documents trong Collection")
-        print("  6. 🗑️ Xóa Document cụ thể")
-        print("  7. ✏️ Cập nhật Document")
+
+        # Lấy thông tin settings hiện tại
+        config = config_manager.get_all_config()
+        if config and 'settings' in config:
+            settings = config['settings']
+            print(f"📊 Settings hiện tại ({len(settings)} items):")
+            print("-" * 60)
+
+            if settings:
+                for i, (key, value) in enumerate(settings.items(), 1):
+                    print(f"  {i:2d}. {key}: {value}")
+            else:
+                print("  Không có settings nào")
+
+            print("-" * 60)
+
+        print("🔧 MENU SETTINGS:")
+        print("  1. 📋 Xem danh sách Settings")
+        print("  2. ✏️ Cập nhật Setting")
+        print("  3. ➕ Thêm Setting mới")
         print("  0. 🔙 Quay lại menu chính")
         print("-" * 60)
-        
-        choice = input("Chọn chức năng (0-7): ").strip()
-        
+
+        choice = input("Chọn chức năng (0-3): ").strip()
+
         if choice == '0':
             break
         elif choice == '1':
-            show_firebase_collections(config_manager)
+            show_settings_list(config_manager)
         elif choice == '2':
-            show_collection_stats(config_manager)
+            show_update_setting(config_manager)
         elif choice == '3':
-            show_clear_collection(config_manager)
-        elif choice == '4':
-            show_clear_old_documents(config_manager)
-        elif choice == '5':
-            show_collection_documents(config_manager)
-        elif choice == '6':
-            show_delete_document(config_manager)
-        elif choice == '7':
-            show_update_document(config_manager)
+            show_add_setting(config_manager)
         else:
             print("❌ Lựa chọn không hợp lệ!")
             input("Nhấn Enter để tiếp tục...")
 
-def show_firebase_collections(config_manager):
-    """Hiển thị danh sách collections"""
+
+def show_settings_list(config_manager):
+    """Hiển thị danh sách settings"""
     clear_screen()
     show_header()
-    
-    print("📋 DANH SÁCH FIREBASE COLLECTIONS")
+
+    print("📋 DANH SÁCH SETTINGS")
     print("=" * 60)
-    
+
     try:
-        result = config_manager.get_firebase_collections()
-        if result and result.get('success'):
-            collections = result.get('collections', [])
-            count = result.get('count', 0)
-            
-            print(f"✅ Tìm thấy {count} collections:")
-            print("-" * 60)
-            
-            if collections:
-                for i, collection in enumerate(collections, 1):
-                    print(f"  {i:2d}. {collection}")
+        config = config_manager.get_all_config()
+        if config and 'settings' in config:
+            settings = config['settings']
+
+            if settings:
+                print(f"✅ Tìm thấy {len(settings)} settings:")
+                print("-" * 60)
+
+                for i, (key, value) in enumerate(settings.items(), 1):
+                    print(f"  {i:2d}. {key}: {value}")
+
+                print("-" * 60)
+                print(f"📊 Tổng cộng: {len(settings)} settings")
             else:
-                print("  Không có collection nào")
-            
-            print("-" * 60)
-            print(f"📊 Tổng cộng: {count} collections")
-            
+                print("❌ Không có settings nào")
         else:
-            print("❌ Không thể lấy danh sách collections")
-            if result:
-                print(f"Lỗi: {result.get('error', 'Không xác định')}")
-    
+            print("❌ Không thể lấy thông tin settings")
+
     except Exception as e:
         print(f"❌ Lỗi: {e}")
-    
+
     print("\n" + "=" * 60)
     input("Nhấn Enter để quay lại...")
 
-def show_collection_stats(config_manager):
-    """Hiển thị thống kê collection"""
+
+def show_update_setting(config_manager):
+    """Hiển thị chức năng cập nhật setting"""
     clear_screen()
     show_header()
-    
-    print("📊 THỐNG KÊ COLLECTION")
+
+    print("✏️ CẬP NHẬT SETTING")
     print("=" * 60)
-    
-    # Lấy danh sách collections trước
-    collections_result = config_manager.get_firebase_collections()
-    if not collections_result or not collections_result.get('success'):
-        print("❌ Không thể lấy danh sách collections")
+
+    # Lấy danh sách settings
+    config = config_manager.get_all_config()
+    if not config or 'settings' not in config:
+        print("❌ Không thể lấy danh sách settings")
         input("Nhấn Enter để quay lại...")
         return
-    
-    collections = collections_result.get('collections', [])
-    if not collections:
-        print("❌ Không có collection nào")
+
+    settings = config['settings']
+    if not settings:
+        print("❌ Không có settings nào để cập nhật")
         input("Nhấn Enter để quay lại...")
         return
-    
-    print("📋 Chọn collection để xem thống kê:")
-    for i, collection in enumerate(collections, 1):
-        print(f"  {i:2d}. {collection}")
-    
+
+    print("📋 Chọn setting để cập nhật:")
+    settings_list = list(settings.items())
+    for i, (key, value) in enumerate(settings_list, 1):
+        print(f"  {i:2d}. {key}: {value}")
+
     print("-" * 60)
-    
+
     try:
-        choice = input("Nhập số thứ tự hoặc tên collection: ").strip()
-        
-        # Xác định collection name
-        collection_name = None
+        choice = input("Nhập số thứ tự hoặc tên setting: ").strip()
+
+        # Xác định setting key
+        setting_key = None
         if choice.isdigit():
             choice_num = int(choice)
-            if 1 <= choice_num <= len(collections):
-                collection_name = collections[choice_num - 1]
+            if 1 <= choice_num <= len(settings_list):
+                setting_key = settings_list[choice_num - 1][0]
             else:
                 print("❌ Số thứ tự không hợp lệ")
                 input("Nhấn Enter để quay lại...")
                 return
         else:
-            if choice in collections:
-                collection_name = choice
+            if choice in settings:
+                setting_key = choice
             else:
-                print(f"❌ Không tìm thấy collection '{choice}'")
+                print(f"❌ Không tìm thấy setting '{choice}'")
                 input("Nhấn Enter để quay lại...")
                 return
-        
-        # Lấy thống kê
-        result = config_manager.get_collection_stats(collection_name)
-        if result and result.get('success'):
-            doc_count = result.get('document_count', 0)
-            collection = result.get('collection', collection_name)
-            
-            print(f"\n📊 THỐNG KÊ COLLECTION: {collection}")
-            print("-" * 60)
-            print(f"📄 Số documents: {doc_count:,}")
-            
-            if doc_count > 0:
-                print(f"💾 Kích thước ước tính: ~{doc_count * 2} KB")
-            
-        else:
-            print("❌ Không thể lấy thống kê collection")
-            if result:
-                print(f"Lỗi: {result.get('error', 'Không xác định')}")
-    
-    except Exception as e:
-        print(f"❌ Lỗi: {e}")
-    
-    print("\n" + "=" * 60)
-    input("Nhấn Enter để quay lại...")
 
-def show_clear_collection(config_manager):
-    """Hiển thị chức năng xóa collection"""
-    clear_screen()
-    show_header()
-    
-    print("🗑️ XÓA TOÀN BỘ COLLECTION")
-    print("=" * 60)
-    print("⚠️ CẢNH BÁO: Hành động này sẽ xóa TẤT CẢ documents trong collection!")
-    print("⚠️ Hành động này KHÔNG THỂ HOÀN TÁC!")
-    print("-" * 60)
-    
-    # Lấy danh sách collections
-    collections_result = config_manager.get_firebase_collections()
-    if not collections_result or not collections_result.get('success'):
-        print("❌ Không thể lấy danh sách collections")
-        input("Nhấn Enter để quay lại...")
-        return
-    
-    collections = collections_result.get('collections', [])
-    if not collections:
-        print("❌ Không có collection nào")
-        input("Nhấn Enter để quay lại...")
-        return
-    
-    print("📋 Chọn collection để xóa:")
-    for i, collection in enumerate(collections, 1):
-        print(f"  {i:2d}. {collection}")
-    
-    print("-" * 60)
-    
-    try:
-        choice = input("Nhập số thứ tự hoặc tên collection: ").strip()
-        
-        # Xác định collection name
-        collection_name = None
-        if choice.isdigit():
-            choice_num = int(choice)
-            if 1 <= choice_num <= len(collections):
-                collection_name = collections[choice_num - 1]
-            else:
-                print("❌ Số thứ tự không hợp lệ")
-                input("Nhấn Enter để quay lại...")
-                return
-        else:
-            if choice in collections:
-                collection_name = choice
-            else:
-                print(f"❌ Không tìm thấy collection '{choice}'")
-                input("Nhấn Enter để quay lại...")
-                return
-        
-        # Hiển thị thống kê trước khi xóa
-        stats_result = config_manager.get_collection_stats(collection_name)
-        if stats_result and stats_result.get('success'):
-            doc_count = stats_result.get('document_count', 0)
-            print(f"\n📊 Collection '{collection_name}' có {doc_count:,} documents")
-        
-        # Xác nhận xóa
-        print(f"\n⚠️ Bạn có chắc chắn muốn xóa TẤT CẢ documents trong collection '{collection_name}'?")
-        confirm = input("Nhập 'DELETE' để xác nhận: ").strip()
-        
-        if confirm == "DELETE":
-            print(f"\n🗑️ Đang xóa collection '{collection_name}'...")
-            
-            result = config_manager.clear_collection(collection_name)
-            if result and result.get('success'):
-                deleted_count = result.get('deleted_count', 0)
-                print(f"✅ Đã xóa thành công {deleted_count:,} documents từ collection '{collection_name}'")
-            else:
-                print("❌ Lỗi khi xóa collection")
-                if result:
-                    print(f"Lỗi: {result.get('error', 'Không xác định')}")
-        else:
-            print("❌ Đã hủy thao tác xóa")
-    
-    except Exception as e:
-        print(f"❌ Lỗi: {e}")
-    
-    print("\n" + "=" * 60)
-    input("Nhấn Enter để quay lại...")
+        # Nhập giá trị mới
+        current_value = settings[setting_key]
+        print(f"\n📝 Setting: {setting_key}")
+        print(f"💾 Giá trị hiện tại: {current_value}")
 
-def show_clear_old_documents(config_manager):
-    """Hiển thị chức năng xóa documents cũ"""
-    clear_screen()
-    show_header()
-    
-    print("🗑️ XÓA DOCUMENTS CŨ")
-    print("=" * 60)
-    print("Chức năng này sẽ xóa các documents cũ hơn số ngày được chỉ định")
-    print("-" * 60)
-    
-    # Lấy danh sách collections
-    collections_result = config_manager.get_firebase_collections()
-    if not collections_result or not collections_result.get('success'):
-        print("❌ Không thể lấy danh sách collections")
-        input("Nhấn Enter để quay lại...")
-        return
-    
-    collections = collections_result.get('collections', [])
-    if not collections:
-        print("❌ Không có collection nào")
-        input("Nhấn Enter để quay lại...")
-        return
-    
-    print("📋 Chọn collection:")
-    for i, collection in enumerate(collections, 1):
-        print(f"  {i:2d}. {collection}")
-    
-    print("-" * 60)
-    
-    try:
-        choice = input("Nhập số thứ tự hoặc tên collection: ").strip()
-        
-        # Xác định collection name
-        collection_name = None
-        if choice.isdigit():
-            choice_num = int(choice)
-            if 1 <= choice_num <= len(collections):
-                collection_name = collections[choice_num - 1]
-            else:
-                print("❌ Số thứ tự không hợp lệ")
-                input("Nhấn Enter để quay lại...")
-                return
-        else:
-            if choice in collections:
-                collection_name = choice
-            else:
-                print(f"❌ Không tìm thấy collection '{choice}'")
-                input("Nhấn Enter để quay lại...")
-                return
-        
-        # Nhập số ngày
-        while True:
-            try:
-                days_input = input(f"\nNhập số ngày (documents cũ hơn X ngày sẽ bị xóa): ").strip()
-                days = int(days_input)
-                if days > 0:
-                    break
-                else:
-                    print("❌ Số ngày phải lớn hơn 0")
-            except ValueError:
-                print("❌ Vui lòng nhập số nguyên hợp lệ")
-        
-        # Hiển thị thống kê trước khi xóa
-        stats_result = config_manager.get_collection_stats(collection_name)
-        if stats_result and stats_result.get('success'):
-            doc_count = stats_result.get('document_count', 0)
-            print(f"\n📊 Collection '{collection_name}' có {doc_count:,} documents")
-        
-        # Xác nhận xóa
-        print(f"\n⚠️ Bạn có chắc chắn muốn xóa documents cũ hơn {days} ngày trong collection '{collection_name}'?")
-        confirm = input("Nhập 'DELETE' để xác nhận: ").strip()
-        
-        if confirm == "DELETE":
-            print(f"\n🗑️ Đang xóa documents cũ hơn {days} ngày...")
-            
-            result = config_manager.clear_old_documents(collection_name, days)
-            if result and result.get('success'):
-                deleted_count = result.get('deleted_count', 0)
-                cutoff_date = result.get('cutoff_date', 'N/A')
-                print(f"✅ Đã xóa thành công {deleted_count:,} documents cũ hơn {days} ngày")
-                print(f"📅 Cutoff date: {cutoff_date}")
-            else:
-                print("❌ Lỗi khi xóa documents cũ")
-                if result:
-                    print(f"Lỗi: {result.get('error', 'Không xác định')}")
-        else:
-            print("❌ Đã hủy thao tác xóa")
-    
-    except Exception as e:
-        print(f"❌ Lỗi: {e}")
-    
-    print("\n" + "=" * 60)
-    input("Nhấn Enter để quay lại...")
-
-def show_collection_documents(config_manager):
-    """Hiển thị documents trong collection"""
-    clear_screen()
-    show_header()
-    
-    print("📄 XEM DOCUMENTS TRONG COLLECTION")
-    print("=" * 60)
-    
-    # Lấy danh sách collections
-    collections_result = config_manager.get_firebase_collections()
-    if not collections_result or not collections_result.get('success'):
-        print("❌ Không thể lấy danh sách collections")
-        input("Nhấn Enter để quay lại...")
-        return
-    
-    collections = collections_result.get('collections', [])
-    if not collections:
-        print("❌ Không có collection nào")
-        input("Nhấn Enter để quay lại...")
-        return
-    
-    print("📋 Chọn collection:")
-    for i, collection in enumerate(collections, 1):
-        print(f"  {i:2d}. {collection}")
-    
-    print("-" * 60)
-    
-    try:
-        choice = input("Nhập số thứ tự hoặc tên collection: ").strip()
-        
-        # Xác định collection name
-        collection_name = None
-        if choice.isdigit():
-            choice_num = int(choice)
-            if 1 <= choice_num <= len(collections):
-                collection_name = collections[choice_num - 1]
-            else:
-                print("❌ Số thứ tự không hợp lệ")
-                input("Nhấn Enter để quay lại...")
-                return
-        else:
-            if choice in collections:
-                collection_name = choice
-            else:
-                print(f"❌ Không tìm thấy collection '{choice}'")
-                input("Nhấn Enter để quay lại...")
-                return
-        
-        # Lấy documents
-        result = config_manager.get_collection_documents(collection_name, limit=20)
-        if result and result.get('success'):
-            documents = result.get('documents', [])
-            count = result.get('count', 0)
-            
-            print(f"\n📄 DOCUMENTS TRONG COLLECTION: {collection_name}")
-            print("=" * 80)
-            
-            if documents:
-                print(f"{'ID':<30} {'Title/Name':<30} {'Date':<20}")
-                print("-" * 80)
-                
-                for doc in documents:
-                    doc_id = doc.get('id', 'N/A')[:28] + '..' if len(doc.get('id', '')) > 30 else doc.get('id', 'N/A')
-                    
-                    # Tìm title hoặc name
-                    title = 'N/A'
-                    for field in ['title', 'name', 'subject', 'heading']:
-                        if field in doc:
-                            title = str(doc[field])[:28] + '..' if len(str(doc[field])) > 30 else str(doc[field])
-                            break
-                    
-                    # Tìm date
-                    date = 'N/A'
-                    for field in ['created_at', 'updated_at', 'timestamp', 'date', 'crawled_at', 'published_date']:
-                        if field in doc:
-                            date = str(doc[field])[:20]
-                            break
-                    
-                    print(f"{doc_id:<30} {title:<30} {date:<20}")
-                
-                print("-" * 80)
-                print(f"📊 Hiển thị {len(documents)}/{count} documents (giới hạn 20)")
-            else:
-                print("  Không có documents nào")
-            
-        else:
-            print("❌ Không thể lấy documents")
-            if result:
-                print(f"Lỗi: {result.get('error', 'Không xác định')}")
-    
-    except Exception as e:
-        print(f"❌ Lỗi: {e}")
-    
-    print("\n" + "=" * 60)
-    input("Nhấn Enter để quay lại...")
-
-def show_delete_document(config_manager):
-    """Hiển thị chức năng xóa document cụ thể"""
-    clear_screen()
-    show_header()
-    
-    print("🗑️ XÓA DOCUMENT CỤ THỂ")
-    print("=" * 60)
-    print("Chức năng này sẽ xóa một document cụ thể trong collection")
-    print("-" * 60)
-    
-    # Lấy danh sách collections
-    collections_result = config_manager.get_firebase_collections()
-    if not collections_result or not collections_result.get('success'):
-        print("❌ Không thể lấy danh sách collections")
-        input("Nhấn Enter để quay lại...")
-        return
-    
-    collections = collections_result.get('collections', [])
-    if not collections:
-        print("❌ Không có collection nào")
-        input("Nhấn Enter để quay lại...")
-        return
-    
-    print("📋 Chọn collection:")
-    for i, collection in enumerate(collections, 1):
-        print(f"  {i:2d}. {collection}")
-    
-    print("-" * 60)
-    
-    try:
-        choice = input("Nhập số thứ tự hoặc tên collection: ").strip()
-        
-        # Xác định collection name
-        collection_name = None
-        if choice.isdigit():
-            choice_num = int(choice)
-            if 1 <= choice_num <= len(collections):
-                collection_name = collections[choice_num - 1]
-            else:
-                print("❌ Số thứ tự không hợp lệ")
-                input("Nhấn Enter để quay lại...")
-                return
-        else:
-            if choice in collections:
-                collection_name = choice
-            else:
-                print(f"❌ Không tìm thấy collection '{choice}'")
-                input("Nhấn Enter để quay lại...")
-                return
-        
-        # Nhập document ID
-        document_id = input(f"\nNhập Document ID cần xóa: ").strip()
-        if not document_id:
-            print("❌ Document ID không được để trống")
+        new_value = input("Nhập giá trị mới: ").strip()
+        if not new_value:
+            print("❌ Giá trị không được để trống")
             input("Nhấn Enter để quay lại...")
             return
-        
-        # Xác nhận xóa
-        print(f"\n⚠️ Bạn có chắc chắn muốn xóa document '{document_id}' trong collection '{collection_name}'?")
-        confirm = input("Nhập 'DELETE' để xác nhận: ").strip()
-        
-        if confirm == "DELETE":
-            print(f"\n🗑️ Đang xóa document '{document_id}'...")
-            
-            result = config_manager.delete_document(collection_name, document_id)
-            if result and result.get('success'):
-                print(f"✅ Đã xóa thành công document '{document_id}'")
+
+        # Xác nhận cập nhật
+        print(f"\n⚠️ Bạn có chắc chắn muốn cập nhật setting '{setting_key}'?")
+        print(f"Từ: {current_value}")
+        print(f"Thành: {new_value}")
+        confirm = input("Nhập 'UPDATE' để xác nhận: ").strip()
+
+        if confirm == "UPDATE":
+            print(f"\n✏️ Đang cập nhật setting '{setting_key}'...")
+
+            success = config_manager.update_setting(setting_key, new_value)
+            if success:
+                print(f"✅ Đã cập nhật thành công setting '{setting_key}'")
             else:
-                print("❌ Lỗi khi xóa document")
-                if result:
-                    print(f"Lỗi: {result.get('error', 'Không xác định')}")
+                print("❌ Lỗi khi cập nhật setting")
         else:
-            print("❌ Đã hủy thao tác xóa")
-    
+            print("❌ Đã hủy thao tác cập nhật")
+
     except Exception as e:
         print(f"❌ Lỗi: {e}")
-    
+
     print("\n" + "=" * 60)
     input("Nhấn Enter để quay lại...")
 
-def show_update_document(config_manager):
-    """Hiển thị chức năng cập nhật document"""
+
+def show_add_setting(config_manager):
+    """Hiển thị chức năng thêm setting mới"""
     clear_screen()
     show_header()
-    
-    print("✏️ CẬP NHẬT DOCUMENT")
+
+    print("➕ THÊM SETTING MỚI")
     print("=" * 60)
-    print("Chức năng này sẽ cập nhật một document cụ thể trong collection")
-    print("-" * 60)
-    
-    # Lấy danh sách collections
-    collections_result = config_manager.get_firebase_collections()
-    if not collections_result or not collections_result.get('success'):
-        print("❌ Không thể lấy danh sách collections")
-        input("Nhấn Enter để quay lại...")
-        return
-    
-    collections = collections_result.get('collections', [])
-    if not collections:
-        print("❌ Không có collection nào")
-        input("Nhấn Enter để quay lại...")
-        return
-    
-    print("📋 Chọn collection:")
-    for i, collection in enumerate(collections, 1):
-        print(f"  {i:2d}. {collection}")
-    
-    print("-" * 60)
-    
+
     try:
-        choice = input("Nhập số thứ tự hoặc tên collection: ").strip()
-        
-        # Xác định collection name
-        collection_name = None
+        # Nhập tên setting
+        setting_key = input("Nhập tên setting: ").strip()
+        if not setting_key:
+            print("❌ Tên setting không được để trống")
+            input("Nhấn Enter để quay lại...")
+            return
+
+        # Nhập giá trị
+        setting_value = input("Nhập giá trị: ").strip()
+        if not setting_value:
+            print("❌ Giá trị không được để trống")
+            input("Nhấn Enter để quay lại...")
+            return
+
+        # Xác nhận thêm
+        print(f"\n⚠️ Bạn có chắc chắn muốn thêm setting mới?")
+        print(f"Tên: {setting_key}")
+        print(f"Giá trị: {setting_value}")
+        confirm = input("Nhập 'ADD' để xác nhận: ").strip()
+
+        if confirm == "ADD":
+            print(f"\n➕ Đang thêm setting '{setting_key}'...")
+
+            success = config_manager.update_setting(setting_key, setting_value)
+            if success:
+                print(f"✅ Đã thêm thành công setting '{setting_key}'")
+            else:
+                print("❌ Lỗi khi thêm setting")
+        else:
+            print("❌ Đã hủy thao tác thêm")
+
+    except Exception as e:
+        print(f"❌ Lỗi: {e}")
+
+    print("\n" + "=" * 60)
+    input("Nhấn Enter để quay lại...")
+
+
+def show_strategies_management(config_manager):
+    """Hiển thị menu quản lý Strategies"""
+    while True:
+        clear_screen()
+        show_header()
+
+        print("🎯 QUẢN LÝ STRATEGIES")
+        print("=" * 60)
+        print("Chức năng quản lý các chiến lược trading:")
+        print("  - Xem danh sách strategies hiện tại")
+        print("  - Cập nhật strategy")
+        print("  - Thêm strategy mới")
+        print("-" * 60)
+
+        # Lấy thông tin strategies hiện tại
+        config = config_manager.get_all_config()
+        if config and 'strategies' in config:
+            strategies = config['strategies']
+            print(f"📊 Strategies hiện tại ({len(strategies)} items):")
+            print("-" * 60)
+
+            if strategies:
+                for i, (name, strategy_type) in enumerate(strategies.items(), 1):
+                    print(f"  {i:2d}. {name}: {strategy_type}")
+            else:
+                print("  Không có strategies nào")
+
+            print("-" * 60)
+
+        print("🔧 MENU STRATEGIES:")
+        print("  1. 📋 Xem danh sách Strategies")
+        print("  2. ✏️ Cập nhật Strategy")
+        print("  3. ➕ Thêm Strategy mới")
+        print("  0. 🔙 Quay lại menu chính")
+        print("-" * 60)
+
+        choice = input("Chọn chức năng (0-3): ").strip()
+
+        if choice == '0':
+            break
+        elif choice == '1':
+            show_strategies_list(config_manager)
+        elif choice == '2':
+            show_update_strategy(config_manager)
+        elif choice == '3':
+            show_add_strategy(config_manager)
+        else:
+            print("❌ Lựa chọn không hợp lệ!")
+            input("Nhấn Enter để tiếp tục...")
+
+
+def show_strategies_list(config_manager):
+    """Hiển thị danh sách strategies"""
+    clear_screen()
+    show_header()
+
+    print("📋 DANH SÁCH STRATEGIES")
+    print("=" * 60)
+
+    try:
+        config = config_manager.get_all_config()
+        if config and 'strategies' in config:
+            strategies = config['strategies']
+
+            if strategies:
+                print(f"✅ Tìm thấy {len(strategies)} strategies:")
+                print("-" * 60)
+
+                for i, (name, strategy_type) in enumerate(strategies.items(), 1):
+                    print(f"  {i:2d}. {name}: {strategy_type}")
+
+                print("-" * 60)
+                print(f"📊 Tổng cộng: {len(strategies)} strategies")
+            else:
+                print("❌ Không có strategies nào")
+        else:
+            print("❌ Không thể lấy thông tin strategies")
+
+    except Exception as e:
+        print(f"❌ Lỗi: {e}")
+
+    print("\n" + "=" * 60)
+    input("Nhấn Enter để quay lại...")
+
+
+def show_update_strategy(config_manager):
+    """Hiển thị chức năng cập nhật strategy"""
+    clear_screen()
+    show_header()
+
+    print("✏️ CẬP NHẬT STRATEGY")
+    print("=" * 60)
+
+    # Lấy danh sách strategies
+    config = config_manager.get_all_config()
+    if not config or 'strategies' not in config:
+        print("❌ Không thể lấy danh sách strategies")
+        input("Nhấn Enter để quay lại...")
+        return
+
+    strategies = config['strategies']
+    if not strategies:
+        print("❌ Không có strategies nào để cập nhật")
+        input("Nhấn Enter để quay lại...")
+        return
+
+    print("📋 Chọn strategy để cập nhật:")
+    strategies_list = list(strategies.items())
+    for i, (name, strategy_type) in enumerate(strategies_list, 1):
+        print(f"  {i:2d}. {name}: {strategy_type}")
+
+    print("-" * 60)
+
+    try:
+        choice = input("Nhập số thứ tự hoặc tên strategy: ").strip()
+
+        # Xác định strategy name
+        strategy_name = None
         if choice.isdigit():
             choice_num = int(choice)
-            if 1 <= choice_num <= len(collections):
-                collection_name = collections[choice_num - 1]
+            if 1 <= choice_num <= len(strategies_list):
+                strategy_name = strategies_list[choice_num - 1][0]
             else:
                 print("❌ Số thứ tự không hợp lệ")
                 input("Nhấn Enter để quay lại...")
                 return
         else:
-            if choice in collections:
-                collection_name = choice
+            if choice in strategies:
+                strategy_name = choice
             else:
-                print(f"❌ Không tìm thấy collection '{choice}'")
+                print(f"❌ Không tìm thấy strategy '{choice}'")
                 input("Nhấn Enter để quay lại...")
                 return
-        
-        # Nhập document ID
-        document_id = input(f"\nNhập Document ID cần cập nhật: ").strip()
-        if not document_id:
-            print("❌ Document ID không được để trống")
+
+        # Nhập strategy type mới
+        current_type = strategies[strategy_name]
+        print(f"\n📝 Strategy: {strategy_name}")
+        print(f"💾 Loại hiện tại: {current_type}")
+
+        print("\n📋 Các loại strategy có sẵn:")
+        print("  - scalping")
+        print("  - swing")
+        print("  - trend")
+        print("  - mean_reversion")
+        print("  - breakout")
+
+        new_type = input("Nhập loại strategy mới: ").strip()
+        if not new_type:
+            print("❌ Loại strategy không được để trống")
             input("Nhấn Enter để quay lại...")
             return
-        
-        # Nhập dữ liệu cập nhật
-        print(f"\nNhập dữ liệu cập nhật (JSON format):")
-        print("Ví dụ: {\"title\": \"New Title\", \"status\": \"updated\"}")
-        
-        try:
-            update_data_str = input("Dữ liệu JSON: ").strip()
-            if not update_data_str:
-                print("❌ Dữ liệu không được để trống")
-                input("Nhấn Enter để quay lại...")
-                return
-            
-            import json
-            update_data = json.loads(update_data_str)
-            
-            # Xác nhận cập nhật
-            print(f"\n⚠️ Bạn có chắc chắn muốn cập nhật document '{document_id}'?")
-            print(f"Dữ liệu: {update_data}")
-            confirm = input("Nhập 'UPDATE' để xác nhận: ").strip()
-            
-            if confirm == "UPDATE":
-                print(f"\n✏️ Đang cập nhật document '{document_id}'...")
-                
-                result = config_manager.update_document(collection_name, document_id, update_data)
-                if result and result.get('success'):
-                    print(f"✅ Đã cập nhật thành công document '{document_id}'")
-                else:
-                    print("❌ Lỗi khi cập nhật document")
-                    if result:
-                        print(f"Lỗi: {result.get('error', 'Không xác định')}")
+
+        # Xác nhận cập nhật
+        print(f"\n⚠️ Bạn có chắc chắn muốn cập nhật strategy '{strategy_name}'?")
+        print(f"Từ: {current_type}")
+        print(f"Thành: {new_type}")
+        confirm = input("Nhập 'UPDATE' để xác nhận: ").strip()
+
+        if confirm == "UPDATE":
+            print(f"\n✏️ Đang cập nhật strategy '{strategy_name}'...")
+
+            success = config_manager.update_strategy(strategy_name, new_type)
+            if success:
+                print(f"✅ Đã cập nhật thành công strategy '{strategy_name}'")
             else:
-                print("❌ Đã hủy thao tác cập nhật")
-        
-        except json.JSONDecodeError:
-            print("❌ Dữ liệu JSON không hợp lệ")
-        except Exception as e:
-            print(f"❌ Lỗi: {e}")
-    
+                print("❌ Lỗi khi cập nhật strategy")
+        else:
+            print("❌ Đã hủy thao tác cập nhật")
+
     except Exception as e:
         print(f"❌ Lỗi: {e}")
-    
+
     print("\n" + "=" * 60)
     input("Nhấn Enter để quay lại...")
+
+
+def show_add_strategy(config_manager):
+    """Hiển thị chức năng thêm strategy mới"""
+    clear_screen()
+    show_header()
+
+    print("➕ THÊM STRATEGY MỚI")
+    print("=" * 60)
+
+    try:
+        # Nhập tên strategy
+        strategy_name = input("Nhập tên strategy: ").strip()
+        if not strategy_name:
+            print("❌ Tên strategy không được để trống")
+            input("Nhấn Enter để quay lại...")
+            return
+
+        # Nhập loại strategy
+        print("\n📋 Các loại strategy có sẵn:")
+        print("  - scalping")
+        print("  - swing")
+        print("  - trend")
+        print("  - mean_reversion")
+        print("  - breakout")
+
+        strategy_type = input("Nhập loại strategy: ").strip()
+        if not strategy_type:
+            print("❌ Loại strategy không được để trống")
+            input("Nhấn Enter để quay lại...")
+            return
+
+        # Xác nhận thêm
+        print(f"\n⚠️ Bạn có chắc chắn muốn thêm strategy mới?")
+        print(f"Tên: {strategy_name}")
+        print(f"Loại: {strategy_type}")
+        confirm = input("Nhập 'ADD' để xác nhận: ").strip()
+
+        if confirm == "ADD":
+            print(f"\n➕ Đang thêm strategy '{strategy_name}'...")
+
+            success = config_manager.update_strategy(strategy_name, strategy_type)
+            if success:
+                print(f"✅ Đã thêm thành công strategy '{strategy_name}'")
+            else:
+                print("❌ Lỗi khi thêm strategy")
+        else:
+            print("❌ Đã hủy thao tác thêm")
+
+    except Exception as e:
+        print(f"❌ Lỗi: {e}")
+
+    print("\n" + "=" * 60)
+    input("Nhấn Enter để quay lại...")
+
+
+def show_strategy_config_management(config_manager):
+    """Hiển thị menu quản lý Strategy Config"""
+    while True:
+        clear_screen()
+        show_header()
+
+        print("⚙️ QUẢN LÝ STRATEGY CONFIG")
+        print("=" * 60)
+        print("Chức năng quản lý cấu hình chi tiết cho từng strategy:")
+        print("  - Xem danh sách strategy configs")
+        print("  - Cập nhật strategy config")
+        print("  - Thêm strategy config mới")
+        print("-" * 60)
+
+        # Lấy thông tin strategy configs hiện tại
+        config = config_manager.get_all_config()
+        if config and 'strategy_config' in config:
+            strategy_configs = config['strategy_config']
+            print(f"📊 Strategy Configs hiện tại ({len(strategy_configs)} items):")
+            print("-" * 60)
+
+            if strategy_configs:
+                for i, (name, config_data) in enumerate(strategy_configs.items(), 1):
+                    symbol = config_data.get('symbol', 'N/A')
+                    volume = config_data.get('volume', 'N/A')
+                    print(f"  {i:2d}. {name} - {symbol} (Vol: {volume})")
+            else:
+                print("  Không có strategy configs nào")
+
+            print("-" * 60)
+
+        print("🔧 MENU STRATEGY CONFIG:")
+        print("  1. 📋 Xem danh sách Strategy Configs")
+        print("  2. ✏️ Cập nhật Strategy Config")
+        print("  3. ➕ Thêm Strategy Config mới")
+        print("  0. 🔙 Quay lại menu chính")
+        print("-" * 60)
+
+        choice = input("Chọn chức năng (0-3): ").strip()
+
+        if choice == '0':
+            break
+        elif choice == '1':
+            show_strategy_configs_list(config_manager)
+        elif choice == '2':
+            show_update_strategy_config(config_manager)
+        elif choice == '3':
+            show_add_strategy_config(config_manager)
+        else:
+            print("❌ Lựa chọn không hợp lệ!")
+            input("Nhấn Enter để tiếp tục...")
+
+
+def show_strategy_configs_list(config_manager):
+    """Hiển thị danh sách strategy configs"""
+    clear_screen()
+    show_header()
+
+    print("📋 DANH SÁCH STRATEGY CONFIGS")
+    print("=" * 60)
+
+    try:
+        config = config_manager.get_all_config()
+        if config and 'strategy_config' in config:
+            strategy_configs = config['strategy_config']
+
+            if strategy_configs:
+                print(f"✅ Tìm thấy {len(strategy_configs)} strategy configs:")
+                print("-" * 80)
+                print(f"{'Tên':<20} {'Symbol':<10} {'Volume':<8} {'SL':<8} {'TP':<8} {'TF':<10}")
+                print("-" * 80)
+
+                for name, config_data in strategy_configs.items():
+                    symbol = config_data.get('symbol', 'N/A')
+                    volume = config_data.get('volume', 'N/A')
+                    stop_loss = config_data.get('stop_loss', 'N/A')
+                    take_profit = config_data.get('take_profit', 'N/A')
+                    timeframe = config_data.get('timeframe', 'N/A')
+
+                    print(f"{name:<20} {symbol:<10} {volume:<8} {stop_loss:<8} {take_profit:<8} {timeframe:<10}")
+
+                print("-" * 80)
+                print(f"📊 Tổng cộng: {len(strategy_configs)} strategy configs")
+            else:
+                print("❌ Không có strategy configs nào")
+        else:
+            print("❌ Không thể lấy thông tin strategy configs")
+
+    except Exception as e:
+        print(f"❌ Lỗi: {e}")
+
+    print("\n" + "=" * 60)
+    input("Nhấn Enter để quay lại...")
+
+
+def show_update_strategy_config(config_manager):
+    """Hiển thị chức năng cập nhật strategy config"""
+    clear_screen()
+    show_header()
+
+    print("✏️ CẬP NHẬT STRATEGY CONFIG")
+    print("=" * 60)
+
+    # Lấy danh sách strategy configs
+    config = config_manager.get_all_config()
+    if not config or 'strategy_config' not in config:
+        print("❌ Không thể lấy danh sách strategy configs")
+        input("Nhấn Enter để quay lại...")
+        return
+
+    strategy_configs = config['strategy_config']
+    if not strategy_configs:
+        print("❌ Không có strategy configs nào để cập nhật")
+        input("Nhấn Enter để quay lại...")
+        return
+
+    print("📋 Chọn strategy config để cập nhật:")
+    configs_list = list(strategy_configs.items())
+    for i, (name, config_data) in enumerate(configs_list, 1):
+        symbol = config_data.get('symbol', 'N/A')
+        volume = config_data.get('volume', 'N/A')
+        print(f"  {i:2d}. {name} - {symbol} (Vol: {volume})")
+
+    print("-" * 60)
+
+    try:
+        choice = input("Nhập số thứ tự hoặc tên strategy: ").strip()
+
+        # Xác định strategy name
+        strategy_name = None
+        if choice.isdigit():
+            choice_num = int(choice)
+            if 1 <= choice_num <= len(configs_list):
+                strategy_name = configs_list[choice_num - 1][0]
+            else:
+                print("❌ Số thứ tự không hợp lệ")
+                input("Nhấn Enter để quay lại...")
+                return
+        else:
+            if choice in strategy_configs:
+                strategy_name = choice
+            else:
+                print(f"❌ Không tìm thấy strategy '{choice}'")
+                input("Nhấn Enter để quay lại...")
+                return
+
+        # Hiển thị thông tin hiện tại
+        current_config = strategy_configs[strategy_name]
+        print(f"\n📝 Strategy: {strategy_name}")
+        print(f"💾 Cấu hình hiện tại:")
+        print(f"  - Symbol: {current_config.get('symbol', 'N/A')}")
+        print(f"  - Volume: {current_config.get('volume', 'N/A')}")
+        print(f"  - Stop Loss: {current_config.get('stop_loss', 'N/A')}")
+        print(f"  - Take Profit: {current_config.get('take_profit', 'N/A')}")
+        print(f"  - Timeframe: {current_config.get('timeframe', 'N/A')}")
+
+        # Nhập thông tin mới
+        print(f"\n📝 Nhập thông tin mới:")
+        symbol = input("Symbol (Enter để giữ nguyên): ").strip() or current_config.get('symbol', '')
+        volume = input("Volume (Enter để giữ nguyên): ").strip() or current_config.get('volume', '')
+        stop_loss = input("Stop Loss (Enter để giữ nguyên): ").strip() or current_config.get('stop_loss', '')
+        take_profit = input("Take Profit (Enter để giữ nguyên): ").strip() or current_config.get('take_profit', '')
+        timeframe = input("Timeframe (Enter để giữ nguyên): ").strip() or current_config.get('timeframe', '')
+
+        # Xác nhận cập nhật
+        print(f"\n⚠️ Bạn có chắc chắn muốn cập nhật strategy config '{strategy_name}'?")
+        print(f"Symbol: {symbol}")
+        print(f"Volume: {volume}")
+        print(f"Stop Loss: {stop_loss}")
+        print(f"Take Profit: {take_profit}")
+        print(f"Timeframe: {timeframe}")
+        confirm = input("Nhập 'UPDATE' để xác nhận: ").strip()
+
+        if confirm == "UPDATE":
+            print(f"\n✏️ Đang cập nhật strategy config '{strategy_name}'...")
+
+            success = config_manager.update_strategy_config(strategy_name, symbol, volume, stop_loss, take_profit,
+                                                            timeframe)
+            if success:
+                print(f"✅ Đã cập nhật thành công strategy config '{strategy_name}'")
+            else:
+                print("❌ Lỗi khi cập nhật strategy config")
+        else:
+            print("❌ Đã hủy thao tác cập nhật")
+
+    except Exception as e:
+        print(f"❌ Lỗi: {e}")
+
+    print("\n" + "=" * 60)
+    input("Nhấn Enter để quay lại...")
+
+
+def show_add_strategy_config(config_manager):
+    """Hiển thị chức năng thêm strategy config mới"""
+    clear_screen()
+    show_header()
+
+    print("➕ THÊM STRATEGY CONFIG MỚI")
+    print("=" * 60)
+
+    try:
+        # Nhập thông tin strategy config
+        strategy_name = input("Nhập tên strategy: ").strip()
+        if not strategy_name:
+            print("❌ Tên strategy không được để trống")
+            input("Nhấn Enter để quay lại...")
+            return
+
+        symbol = input("Nhập symbol (VD: XAUUSD): ").strip()
+        if not symbol:
+            print("❌ Symbol không được để trống")
+            input("Nhấn Enter để quay lại...")
+            return
+
+        volume = input("Nhập volume (VD: 0.01): ").strip()
+        if not volume:
+            print("❌ Volume không được để trống")
+            input("Nhấn Enter để quay lại...")
+            return
+
+        stop_loss = input("Nhập stop loss (VD: 50): ").strip()
+        if not stop_loss:
+            print("❌ Stop loss không được để trống")
+            input("Nhấn Enter để quay lại...")
+            return
+
+        take_profit = input("Nhập take profit (VD: 100): ").strip()
+        if not take_profit:
+            print("❌ Take profit không được để trống")
+            input("Nhấn Enter để quay lại...")
+            return
+
+        timeframe = input("Nhập timeframe (VD: M5): ").strip()
+        if not timeframe:
+            print("❌ Timeframe không được để trống")
+            input("Nhấn Enter để quay lại...")
+            return
+
+        # Xác nhận thêm
+        print(f"\n⚠️ Bạn có chắc chắn muốn thêm strategy config mới?")
+        print(f"Tên: {strategy_name}")
+        print(f"Symbol: {symbol}")
+        print(f"Volume: {volume}")
+        print(f"Stop Loss: {stop_loss}")
+        print(f"Take Profit: {take_profit}")
+        print(f"Timeframe: {timeframe}")
+        confirm = input("Nhập 'ADD' để xác nhận: ").strip()
+
+        if confirm == "ADD":
+            print(f"\n➕ Đang thêm strategy config '{strategy_name}'...")
+
+            success = config_manager.update_strategy_config(strategy_name, symbol, volume, stop_loss, take_profit,
+                                                            timeframe)
+            if success:
+                print(f"✅ Đã thêm thành công strategy config '{strategy_name}'")
+            else:
+                print("❌ Lỗi khi thêm strategy config")
+        else:
+            print("❌ Đã hủy thao tác thêm")
+
+    except Exception as e:
+        print(f"❌ Lỗi: {e}")
+
+    print("\n" + "=" * 60)
+    input("Nhấn Enter để quay lại...")
+
+
+def show_test_settings_management(config_manager):
+    """Hiển thị menu quản lý Test Settings"""
+    while True:
+        clear_screen()
+        show_header()
+
+        print("🧪 QUẢN LÝ TEST SETTINGS")
+        print("=" * 60)
+        print("Chức năng quản lý cấu hình test và debug:")
+        print("  - Xem danh sách test settings hiện tại")
+        print("  - Cập nhật test setting")
+        print("  - Thêm test setting mới")
+        print("-" * 60)
+
+        # Lấy thông tin test settings hiện tại
+        config = config_manager.get_all_config()
+        if config and 'test_settings' in config:
+            test_settings = config['test_settings']
+            print(f"📊 Test Settings hiện tại ({len(test_settings)} items):")
+            print("-" * 60)
+
+            if test_settings:
+                for i, (key, value) in enumerate(test_settings.items(), 1):
+                    print(f"  {i:2d}. {key}: {value}")
+            else:
+                print("  Không có test settings nào")
+
+            print("-" * 60)
+
+        print("🔧 MENU TEST SETTINGS:")
+        print("  1. 📋 Xem danh sách Test Settings")
+        print("  2. ✏️ Cập nhật Test Setting")
+        print("  3. ➕ Thêm Test Setting mới")
+        print("  0. 🔙 Quay lại menu chính")
+        print("-" * 60)
+
+        choice = input("Chọn chức năng (0-3): ").strip()
+
+        if choice == '0':
+            break
+        elif choice == '1':
+            show_test_settings_list(config_manager)
+        elif choice == '2':
+            show_update_test_setting(config_manager)
+        elif choice == '3':
+            show_add_test_setting(config_manager)
+        else:
+            print("❌ Lựa chọn không hợp lệ!")
+            input("Nhấn Enter để tiếp tục...")
+
+
+def show_test_settings_list(config_manager):
+    """Hiển thị danh sách test settings"""
+    clear_screen()
+    show_header()
+
+    print("📋 DANH SÁCH TEST SETTINGS")
+    print("=" * 60)
+
+    try:
+        config = config_manager.get_all_config()
+        if config and 'test_settings' in config:
+            test_settings = config['test_settings']
+
+            if test_settings:
+                print(f"✅ Tìm thấy {len(test_settings)} test settings:")
+                print("-" * 60)
+
+                for i, (key, value) in enumerate(test_settings.items(), 1):
+                    print(f"  {i:2d}. {key}: {value}")
+
+                print("-" * 60)
+                print(f"📊 Tổng cộng: {len(test_settings)} test settings")
+            else:
+                print("❌ Không có test settings nào")
+        else:
+            print("❌ Không thể lấy thông tin test settings")
+
+    except Exception as e:
+        print(f"❌ Lỗi: {e}")
+
+    print("\n" + "=" * 60)
+    input("Nhấn Enter để quay lại...")
+
+
+def show_update_test_setting(config_manager):
+    """Hiển thị chức năng cập nhật test setting"""
+    clear_screen()
+    show_header()
+
+    print("✏️ CẬP NHẬT TEST SETTING")
+    print("=" * 60)
+
+    # Lấy danh sách test settings
+    config = config_manager.get_all_config()
+    if not config or 'test_settings' not in config:
+        print("❌ Không thể lấy danh sách test settings")
+        input("Nhấn Enter để quay lại...")
+        return
+
+    test_settings = config['test_settings']
+    if not test_settings:
+        print("❌ Không có test settings nào để cập nhật")
+        input("Nhấn Enter để quay lại...")
+        return
+
+    print("📋 Chọn test setting để cập nhật:")
+    settings_list = list(test_settings.items())
+    for i, (key, value) in enumerate(settings_list, 1):
+        print(f"  {i:2d}. {key}: {value}")
+
+    print("-" * 60)
+
+    try:
+        choice = input("Nhập số thứ tự hoặc tên test setting: ").strip()
+
+        # Xác định setting key
+        setting_key = None
+        if choice.isdigit():
+            choice_num = int(choice)
+            if 1 <= choice_num <= len(settings_list):
+                setting_key = settings_list[choice_num - 1][0]
+            else:
+                print("❌ Số thứ tự không hợp lệ")
+                input("Nhấn Enter để quay lại...")
+                return
+        else:
+            if choice in test_settings:
+                setting_key = choice
+            else:
+                print(f"❌ Không tìm thấy test setting '{choice}'")
+                input("Nhấn Enter để quay lại...")
+                return
+
+        # Nhập giá trị mới
+        current_value = test_settings[setting_key]
+        print(f"\n📝 Test Setting: {setting_key}")
+        print(f"💾 Giá trị hiện tại: {current_value}")
+
+        new_value = input("Nhập giá trị mới: ").strip()
+        if not new_value:
+            print("❌ Giá trị không được để trống")
+            input("Nhấn Enter để quay lại...")
+            return
+
+        # Xác nhận cập nhật
+        print(f"\n⚠️ Bạn có chắc chắn muốn cập nhật test setting '{setting_key}'?")
+        print(f"Từ: {current_value}")
+        print(f"Thành: {new_value}")
+        confirm = input("Nhập 'UPDATE' để xác nhận: ").strip()
+
+        if confirm == "UPDATE":
+            print(f"\n✏️ Đang cập nhật test setting '{setting_key}'...")
+
+            success = config_manager.update_test_setting(setting_key, new_value)
+            if success:
+                print(f"✅ Đã cập nhật thành công test setting '{setting_key}'")
+            else:
+                print("❌ Lỗi khi cập nhật test setting")
+        else:
+            print("❌ Đã hủy thao tác cập nhật")
+
+    except Exception as e:
+        print(f"❌ Lỗi: {e}")
+
+    print("\n" + "=" * 60)
+    input("Nhấn Enter để quay lại...")
+
+
+def show_add_test_setting(config_manager):
+    """Hiển thị chức năng thêm test setting mới"""
+    clear_screen()
+    show_header()
+
+    print("➕ THÊM TEST SETTING MỚI")
+    print("=" * 60)
+
+    try:
+        # Nhập tên test setting
+        setting_key = input("Nhập tên test setting: ").strip()
+        if not setting_key:
+            print("❌ Tên test setting không được để trống")
+            input("Nhấn Enter để quay lại...")
+            return
+
+        # Nhập giá trị
+        setting_value = input("Nhập giá trị: ").strip()
+        if not setting_value:
+            print("❌ Giá trị không được để trống")
+            input("Nhấn Enter để quay lại...")
+            return
+
+        # Xác nhận thêm
+        print(f"\n⚠️ Bạn có chắc chắn muốn thêm test setting mới?")
+        print(f"Tên: {setting_key}")
+        print(f"Giá trị: {setting_value}")
+        confirm = input("Nhập 'ADD' để xác nhận: ").strip()
+
+        if confirm == "ADD":
+            print(f"\n➕ Đang thêm test setting '{setting_key}'...")
+
+            success = config_manager.update_test_setting(setting_key, setting_value)
+            if success:
+                print(f"✅ Đã thêm thành công test setting '{setting_key}'")
+            else:
+                print("❌ Lỗi khi thêm test setting")
+        else:
+            print("❌ Đã hủy thao tác thêm")
+
+    except Exception as e:
+        print(f"❌ Lỗi: {e}")
+
+    print("\n" + "=" * 60)
+    input("Nhấn Enter để quay lại...")
+
+
+def show_full_config(config_manager):
+    """Hiển thị toàn bộ cấu hình"""
+    clear_screen()
+    show_header()
+
+    print("📊 TOÀN BỘ CẤU HÌNH")
+    print("=" * 60)
+
+    try:
+        config = config_manager.get_all_config()
+        if config:
+            print("✅ Lấy cấu hình thành công!")
+            print("=" * 60)
+
+            # Hiển thị Settings
+            if 'settings' in config and config['settings']:
+                print("⚙️ SETTINGS:")
+                print("-" * 40)
+                for key, value in config['settings'].items():
+                    print(f"  {key}: {value}")
+                print()
+
+            # Hiển thị Strategies
+            if 'strategies' in config and config['strategies']:
+                print("🎯 STRATEGIES:")
+                print("-" * 40)
+                for name, strategy_type in config['strategies'].items():
+                    print(f"  {name}: {strategy_type}")
+                print()
+
+            # Hiển thị Strategy Configs
+            if 'strategy_config' in config and config['strategy_config']:
+                print("⚙️ STRATEGY CONFIGS:")
+                print("-" * 40)
+                for name, config_data in config['strategy_config'].items():
+                    print(f"  {name}:")
+                    for key, value in config_data.items():
+                        print(f"    {key}: {value}")
+                    print()
+
+            # Hiển thị Test Settings
+            if 'test_settings' in config and config['test_settings']:
+                print("🧪 TEST SETTINGS:")
+                print("-" * 40)
+                for key, value in config['test_settings'].items():
+                    print(f"  {key}: {value}")
+                print()
+
+            # Thống kê tổng quan
+            print("📈 THỐNG KÊ TỔNG QUAN:")
+            print("-" * 40)
+            print(f"  Settings: {len(config.get('settings', {}))} items")
+            print(f"  Strategies: {len(config.get('strategies', {}))} items")
+            print(f"  Strategy Configs: {len(config.get('strategy_config', {}))} items")
+            print(f"  Test Settings: {len(config.get('test_settings', {}))} items")
+
+        else:
+            print("❌ Không thể lấy cấu hình")
+
+    except Exception as e:
+        print(f"❌ Lỗi: {e}")
+
+    print("\n" + "=" * 60)
+    input("Nhấn Enter để quay lại...")
+
 
 def show_main_menu(config_manager):
     """Hiển thị menu chính"""
     while True:
         clear_screen()
         show_header()
-        
+
         # Test kết nối
         if not config_manager.test_connection():
             print("❌ Không thể kết nối đến server!")
@@ -1092,9 +1440,9 @@ def show_main_menu(config_manager):
             print("\nNhấn Enter để thử lại...")
             input()
             continue
-        
+
         print("✅ Kết nối server thành công!")
-        
+
         # Lấy thông tin cấu hình
         config = config_manager.get_all_config()
         if config:
@@ -1103,12 +1451,12 @@ def show_main_menu(config_manager):
             print(f"  - Strategies: {len(config['strategies'])} items")
             print(f"  - Strategy Configs: {len(config['strategy_config'])} items")
             print(f"  - Test Settings: {len(config['test_settings'])} items")
-            
+
             # Hiển thị trạng thái refresh bot
             test_settings = config['test_settings']
             refresh_status = test_settings.get('refresh_bot', 'N/A')
             print(f"  - Refresh Bot: {refresh_status}")
-        
+
         print("\n🔧 MENU CHÍNH:")
         print("  1. ⚙️  Quản lý Settings")
         print("  2. 🎯 Quản lý Strategies")
@@ -1117,32 +1465,27 @@ def show_main_menu(config_manager):
         print("  5. 🔄 Refresh Bot")
         print("  6. 📊 Xem toàn bộ cấu hình")
         print("  7. 💰 Thông tin tài khoản MT5")
-        print("  8. �� Quản lý Firebase")
+        print("  8.  Quản lý Firebase")
         print("  0. 🚪 Thoát")
         print("-" * 60)
-        
+
         choice = input("Chọn chức năng (0-8): ").strip()
-        
+
         if choice == '0':
             print("👋 Tạm biệt!")
             break
         elif choice == '1':
-            print("⚠️ Chức năng này chưa được implement")
-            input("Nhấn Enter để tiếp tục...")
+            show_settings_management(config_manager)
         elif choice == '2':
-            print("⚠️ Chức năng này chưa được implement")
-            input("Nhấn Enter để tiếp tục...")
+            show_strategies_management(config_manager)
         elif choice == '3':
-            print("⚠️ Chức năng này chưa được implement")
-            input("Nhấn Enter để tiếp tục...")
+            show_strategy_config_management(config_manager)
         elif choice == '4':
-            print("⚠️ Chức năng này chưa được implement")
-            input("Nhấn Enter để tiếp tục...")
+            show_test_settings_management(config_manager)
         elif choice == '5':
             show_refresh_bot(config_manager)
         elif choice == '6':
-            print("⚠️ Chức năng này chưa được implement")
-            input("Nhấn Enter để tiếp tục...")
+            show_full_config(config_manager)
         elif choice == '7':
             show_mt5_account_info(config_manager)
         elif choice == '8':
@@ -1151,18 +1494,19 @@ def show_main_menu(config_manager):
             print("❌ Lựa chọn không hợp lệ!")
             input("Nhấn Enter để tiếp tục...")
 
+
 def main():
     """Hàm chính"""
     global SERVER_URL
-    
+
     print("🚀 KHỞI ĐỘNG CLIENT04.PY")
     print("=" * 60)
-    
+
     # Kiểm tra kết nối mạng
     print("📡 Kiểm tra kết nối...")
-    
+
     config_manager = ConfigManager(SERVER_URL)
-    
+
     if not config_manager.test_connection():
         print(f"❌ Không thể kết nối đến {SERVER_URL}")
         print("\n🔧 HƯỚNG DẪN KHẮC PHỤC:")
@@ -1179,9 +1523,10 @@ def main():
                 config_manager = ConfigManager(SERVER_URL)
                 print(f"✅ Đã thay đổi IP thành: {SERVER_URL}")
                 input("Nhấn Enter để tiếp tục...")
-    
+
     # Hiển thị menu chính
     show_main_menu(config_manager)
+
 
 if __name__ == "__main__":
     try:
